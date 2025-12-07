@@ -1,0 +1,132 @@
+.ai-page {
+  min-height: 100vh;
+  /* background: #07161c; */
+  padding-top: 120px;
+  color: #eafffd;
+}
+
+.ai-container {
+  width: 100%;
+  max-width: 950px;
+  margin: auto;
+  padding: 0 20px;
+}
+
+.ai-title {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.ai-sub {
+  color: #9dc5c0;
+  margin-bottom: 20px;
+}
+
+/* CHAT BOX */
+.ai-chat-box {
+  background: #0b2229;
+  border-radius: 18px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #092e36;
+}
+
+/* MESSAGES AREA */
+.ai-messages {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Message Row */
+.ai-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ai-msg.user {
+  justify-content: flex-end;
+}
+
+.avatar {
+  font-size: 20px;
+}
+
+.bubble {
+  max-width: 70%;
+  padding: 10px 14px;
+  background: #123238;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.ai-msg.assistant .bubble {
+  background: #07161c;
+  border: 1px solid #154147;
+}
+
+/* Typing dots */
+.typing-dots {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #123238;
+  border-radius: 12px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: #36e2b2;
+  border-radius: 50%;
+  animation: typing 1s infinite alternate;
+}
+
+.typing-dots span:nth-child(2) { animation-delay: .2s; }
+.typing-dots span:nth-child(3) { animation-delay: .4s; }
+
+@keyframes typing {
+  0% { opacity: 0.2; transform: translateY(2px); }
+  100% { opacity: 1; transform: translateY(-2px); }
+}
+
+/* INPUT ROW */
+.ai-input-container {
+  display: flex;
+  border-top: 1px solid #12363d;
+  padding: 10px;
+  gap: 10px;
+}
+
+.ai-input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #12363d;
+  background: #07161c;
+  color: white;
+  font-size: 14px;
+}
+
+.ai-send-btn {
+  background: #36e2b2;
+  color: black;
+  font-weight: 600;
+  padding: 0 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+}
+
+.ai-send-btn:hover {
+  filter: brightness(0.9);
+}
+
+@media (max-width: 600px) {
+  .bubble { max-width: 90%; }
+}
