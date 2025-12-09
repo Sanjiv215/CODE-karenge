@@ -2,6 +2,8 @@ import React from "react";
 import Navbar from "../components/Navbar"; // using your existing navbar
 import "../styles/projects.css"; // external CSS file
 
+
+
 const Projects = () => {
   return (
     <>

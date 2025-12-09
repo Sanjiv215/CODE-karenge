@@ -18,7 +18,7 @@ const Login = () => {
 
           <div className="input-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" required />
+            <input type="password" placeholder="Enter Password" required />
           </div>
 
           <button type="submit" className="btn">Login</button>

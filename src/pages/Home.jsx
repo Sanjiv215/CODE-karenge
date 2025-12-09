@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/style.css";
+import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 
 const Home = () => {
@@ -10,7 +11,7 @@ const Home = () => {
       {/* HERO SECTION */}
       <section className="hero">
         <div className="hero-content">
-          
+
           <div className="hero-text">
             <h1>
               Master Coding with AI.<br />
@@ -18,14 +19,18 @@ const Home = () => {
             </h1>
 
             <div className="buttons">
-              <button className="primary-btn">Start Practicing</button>
+              <Link to="/practice">
+                <button className="primary-btn">Start Practicing</button>
+              </Link>
+              <Link to="/ai-tutor">
               <button className="secondary-btn">Try AI Tutor</button>
+              </Link>
             </div>
           </div>
 
           <div className="code-card">
             <pre>
-{`1  def factorial(n):
+              {`1  def factorial(n):
 2     fact = 1
 3     for i in range(1, n + 1):
 4         fact *= i
@@ -42,12 +47,12 @@ const Home = () => {
 
       {/* TRACKS SECTION */}
       <section className="tracks">
-        <h2>Popular Tracks</h2>
+        <h2>Progress...</h2>
 
         <div className="track-grid">
 
           <div className="track-card">
-            <img className="track-logo" 
+            <img className="track-logo"
               src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg"
               alt="Python" />
             <p className="title">Python Basics</p>
