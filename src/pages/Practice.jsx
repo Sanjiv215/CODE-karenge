@@ -1,41 +1,51 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Navbar from "../components/Navbar";
+import Editor from "@monaco-editor/react";
+import * as monaco from "monaco-editor";
 import "../styles/practice.css";
 
 const Practice = () => {
-  // --- STATES ---
   const [language, setLanguage] = useState("python");
   const [code, setCode] = useState("");
-  const [outputVisible, setOutputVisible] = useState(false);
   const [output, setOutput] = useState("// Output will appear here...");
   const [question, setQuestion] = useState("Loading question...");
+  const [editorRef, setEditorRef] = useState(null);
 
-  // Languages supported by backend currently
-  const languages = ["Python", "JavaScript", "HTML", "CSS", "React"];
+  // Hide ResizeObserver warning spam
+  useEffect(() => {
+    window.addEventListener("error", (e) => {
+      if (
+        e.message ===
+        "ResizeObserver loop completed with undelivered notifications."
+      ) {
+        e.stopImmediatePropagation();
+      }
+    });
+  }, []);
 
-  // --- API CALL: Fetch Random Question ---
+  const languages = ["Python", "JavaScript"];
+
   const fetchQuestion = async () => {
     try {
       const res = await axios.get(
         `http://localhost:8000/question?subject=${language}`
       );
       setQuestion(res.data.question);
+      setOutput("// Output will appear here...");
     } catch (err) {
-      console.error(err.message);
-      setQuestion("⚠ Failed to load question. Try again.");
+      setQuestion("⚠ Failed to load question.");
     }
   };
 
-  // Fetch question when language changes or page loads
   useEffect(() => {
     fetchQuestion();
   }, [language]);
 
-  // --- API CALL: Execute Code ---
   const handleRun = async () => {
-    setOutputVisible(true);
-    setOutput("⏳ Running your code...");
+    setOutput("⏳ Running code...");
+
+    if (editorRef) editorRef.deltaDecorations([], []);
 
     try {
       const res = await axios.post("http://localhost:8000/run", {
@@ -45,34 +55,39 @@ const Practice = () => {
       });
 
       const result = res.data;
-      let finalOutput = "";
-
-      // Read execution output safely
-      if (result.stdout) finalOutput += result.stdout;
-      if (result.stderr) finalOutput += `\nError:\n${result.stderr}`;
-      if (result.compile_output)
-        finalOutput += `\nCompile Output:\n${result.compile_output}`;
-
-      // No output case
-      if (!finalOutput.trim()) finalOutput = "// No output";
+      let finalOutput =
+        result.stderr || result.stdout || "// No output received";
 
       setOutput(finalOutput);
+
+      // Highlight runtime error line
+      const match = finalOutput.match(/:(\d+):?/);
+      if (match && editorRef) {
+        const line = parseInt(match[1]);
+        editorRef.deltaDecorations([], [
+          {
+            range: new monaco.Range(line, 1, line, 1),
+            options: {
+              isWholeLine: true,
+              className: "errorHighlight",
+            },
+          },
+        ]);
+      }
     } catch (err) {
-      console.error(err);
-      setOutput("❌ Backend Error: " + err.message);
+      setOutput("❌ Backend error! Check server.");
     }
   };
 
   return (
     <>
       <Navbar />
-
       <div className="practice-page">
-        {/* LEFT SIDE — LANGUAGE + QUESTION */}
+
+        {/* LEFT PANEL */}
         <div className="practice-left">
           <h2 className="practice-heading">Practice Question</h2>
 
-          {/* Language Selector */}
           <div className="language-row">
             <span className="language-label">Select Language</span>
             <select
@@ -80,8 +95,7 @@ const Practice = () => {
               value={language}
               onChange={(e) => {
                 setLanguage(e.target.value);
-                setCode(""); // Clear previous language code
-                setOutputVisible(false); // Hide previous output
+                setCode("");
               }}
             >
               {languages.map((lang) => (
@@ -92,46 +106,50 @@ const Practice = () => {
             </select>
           </div>
 
-          {/* Display Question */}
           <div className="question-text">
             <h3>Question:</h3>
             <p>{question}</p>
           </div>
 
-          {/* Get New Question */}
           <button className="next-btn" onClick={fetchQuestion}>
             Next →
           </button>
         </div>
 
-        {/* RIGHT SIDE — CODE EDITOR + OUTPUT */}
-        <div className="practice-right">
-          {/* Code Editor Card */}
-          <div className="editor-card">
+        {/* RIGHT SPLIT SCREEN */}
+        <div className="io-container">
+          <div className="editor-section">
             <div className="editor-header">
               <span className="editor-lang-pill">
                 {language.toUpperCase()}
               </span>
-
               <button className="run-btn" onClick={handleRun}>
                 Run
               </button>
             </div>
 
-            {/* Code Editor Box */}
-            <textarea
-              className="code-editor"
-              spellCheck="false"
-              placeholder="// Write your code here..."
+            <Editor
+              height="500px"
+              theme="vs-dark"
+              language={language === "javascript" ? "javascript" : "python"}
               value={code}
-              onChange={(e) => setCode(e.target.value)}
+              onChange={(v) => setCode(v)}
+              onMount={(editor) => setEditorRef(editor)}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 15,
+                automaticLayout: true,
+                tabSize: 4,
+                insertSpaces: true,
+                wordWrap: "on",
+                scrollBeyondLastLine: false,
+              }}
             />
           </div>
 
-          {/* Sliding Output Panel */}
-          <div className={`output-panel ${outputVisible ? "open" : ""}`}>
-            <div className="output-header">Output</div>
-            <pre className="output-body">{output}</pre>
+          <div className="output-section">
+            <h3>Output</h3>
+            <pre>{output}</pre>
           </div>
         </div>
       </div>
